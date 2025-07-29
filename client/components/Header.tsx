@@ -94,6 +94,7 @@ export default function Header() {
               </Link>
               <div className="flex flex-col space-y-2 pt-4 border-t">
                 <Button variant="ghost" className="justify-start">Sign In</Button>
+                <Button variant="outline" className="justify-start">Sign Up</Button>
                 <Link to="/valuation">
                   <Button className="w-full">Get Started</Button>
                 </Link>
