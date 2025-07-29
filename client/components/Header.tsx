@@ -44,6 +44,7 @@ export default function Header() {
 
         <div className="hidden md:flex items-center space-x-4">
           <Button variant="ghost">Sign In</Button>
+          <Button variant="outline">Sign Up</Button>
           <Link to="/valuation">
             <Button>Get Started</Button>
           </Link>
