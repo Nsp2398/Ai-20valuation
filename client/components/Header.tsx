@@ -43,8 +43,12 @@ export default function Header() {
         </nav>
 
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="ghost">Sign In</Button>
-          <Button variant="outline">Sign Up</Button>
+          <Link to="/signin">
+            <Button variant="ghost">Sign In</Button>
+          </Link>
+          <Link to="/signup">
+            <Button variant="outline">Sign Up</Button>
+          </Link>
           <Link to="/valuation">
             <Button>Get Started</Button>
           </Link>
