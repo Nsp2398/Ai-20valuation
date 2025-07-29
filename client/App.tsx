@@ -20,11 +20,51 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div className="min-h-screen bg-background">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/valuation" element={<Valuation />} />
+            <Route
+              path="/methods"
+              element={
+                <PlaceholderPage
+                  title="Valuation Methods"
+                  description="Learn about our comprehensive valuation methodologies including Berkus, Scorecard, VC Method, DCF, and more."
+                />
+              }
+            />
+            <Route
+              path="/pricing"
+              element={
+                <PlaceholderPage
+                  title="Pricing Plans"
+                  description="Choose the plan that fits your needs. From free basic valuations to premium enterprise solutions."
+                />
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <PlaceholderPage
+                  title="About ValuAI"
+                  description="Learn about our mission to democratize business valuation with AI-powered tools and expert methodologies."
+                />
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <PlaceholderPage
+                  title="Dashboard"
+                  description="View your valuation history, download reports, and track your business growth over time."
+                />
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
