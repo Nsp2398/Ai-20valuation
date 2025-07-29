@@ -16,26 +16,26 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link 
-            to="/valuation" 
+          <Link
+            to="/valuation"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             Start Valuation
           </Link>
-          <Link 
-            to="/methods" 
+          <Link
+            to="/methods"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             Methods
           </Link>
-          <Link 
-            to="/pricing" 
+          <Link
+            to="/pricing"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             Pricing
           </Link>
-          <Link 
-            to="/about" 
+          <Link
+            to="/about"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             About
@@ -68,29 +68,29 @@ export default function Header() {
         {isMenuOpen && (
           <div className="absolute top-16 left-0 right-0 bg-background border-b md:hidden">
             <nav className="flex flex-col space-y-4 p-4">
-              <Link 
-                to="/valuation" 
+              <Link
+                to="/valuation"
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Start Valuation
               </Link>
-              <Link 
-                to="/methods" 
+              <Link
+                to="/methods"
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Methods
               </Link>
-              <Link 
-                to="/pricing" 
+              <Link
+                to="/pricing"
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Pricing
               </Link>
-              <Link 
-                to="/about" 
+              <Link
+                to="/about"
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -98,10 +98,14 @@ export default function Header() {
               </Link>
               <div className="flex flex-col space-y-2 pt-4 border-t">
                 <Link to="/signin">
-                  <Button variant="ghost" className="justify-start w-full">Sign In</Button>
+                  <Button variant="ghost" className="justify-start w-full">
+                    Sign In
+                  </Button>
                 </Link>
                 <Link to="/signup">
-                  <Button variant="outline" className="justify-start w-full">Sign Up</Button>
+                  <Button variant="outline" className="justify-start w-full">
+                    Sign Up
+                  </Button>
                 </Link>
                 <Link to="/valuation">
                   <Button className="w-full">Get Started</Button>
