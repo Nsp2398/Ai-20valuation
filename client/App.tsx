@@ -65,6 +65,33 @@ const App = () => (
                 />
               }
             />
+            <Route
+              path="/terms"
+              element={
+                <PlaceholderPage
+                  title="Terms of Service"
+                  description="Review our terms of service and user agreement for using the ValuAI platform."
+                />
+              }
+            />
+            <Route
+              path="/privacy"
+              element={
+                <PlaceholderPage
+                  title="Privacy Policy"
+                  description="Learn how we collect, use, and protect your personal information and business data."
+                />
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PlaceholderPage
+                  title="Reset Password"
+                  description="Enter your email address to receive password reset instructions."
+                />
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
