@@ -10,6 +10,7 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Checkbox } from "../components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -17,27 +18,34 @@ import {
   EyeOff,
   Mail,
   Lock,
-  User,
+  Phone,
   CheckCircle,
+  MessageSquare,
 } from "lucide-react";
 
 export default function SignUp() {
+  const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
+    verificationCode: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
+    verificationCode: "",
     terms: "",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +53,11 @@ export default function SignUp() {
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+    return phoneRegex.test(phone);
   };
 
   const validatePassword = (password: string) => {
@@ -57,6 +70,48 @@ export default function SignUp() {
     };
   };
 
+  const handleSendCode = async () => {
+    setIsLoading(true);
+    
+    const newErrors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+      verificationCode: "",
+      terms: "",
+    };
+    
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+    
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+    
+    if (!formData.phone) {
+      newErrors.phone = "Phone number is required";
+    } else if (!validatePhone(formData.phone)) {
+      newErrors.phone = "Please enter a valid phone number";
+    }
+    
+    if (Object.values(newErrors).some(error => error)) {
+      setErrors(newErrors);
+      setIsLoading(false);
+      return;
+    }
+    
+    // Simulate sending verification code
+    setTimeout(() => {
+      setIsLoading(false);
+      setCodeSent(true);
+      console.log("Verification code sent to:", formData.phone);
+    }, 2000);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -66,8 +121,10 @@ export default function SignUp() {
       firstName: "",
       lastName: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
+      verificationCode: "",
       terms: "",
     });
 
@@ -76,8 +133,10 @@ export default function SignUp() {
       firstName: "",
       lastName: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
+      verificationCode: "",
       terms: "",
     };
 
@@ -89,10 +148,24 @@ export default function SignUp() {
       newErrors.lastName = "Last name is required";
     }
 
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+    if (authMethod === "email") {
+      if (!formData.email) {
+        newErrors.email = "Email is required";
+      } else if (!validateEmail(formData.email)) {
+        newErrors.email = "Please enter a valid email address";
+      }
+    } else {
+      if (!formData.phone) {
+        newErrors.phone = "Phone number is required";
+      } else if (!validatePhone(formData.phone)) {
+        newErrors.phone = "Please enter a valid phone number";
+      }
+
+      if (!formData.verificationCode) {
+        newErrors.verificationCode = "Verification code is required";
+      } else if (formData.verificationCode.length !== 6) {
+        newErrors.verificationCode = "Verification code must be 6 digits";
+      }
     }
 
     if (!formData.password) {
@@ -132,8 +205,7 @@ export default function SignUp() {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      // Handle successful registration - redirect to dashboard
-      console.log("Sign up successful:", formData);
+      console.log("Sign up successful:", { method: authMethod, data: formData });
     }, 2000);
   };
 
@@ -143,6 +215,12 @@ export default function SignUp() {
     if (errors[field as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
+  };
+
+  const resetPhoneState = () => {
+    setCodeSent(false);
+    setFormData(prev => ({ ...prev, verificationCode: "" }));
+    setErrors(prev => ({ ...prev, phone: "", verificationCode: "" }));
   };
 
   const passwordValidation = validatePassword(formData.password);
@@ -171,207 +249,461 @@ export default function SignUp() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name Fields */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={(e) =>
-                      updateFormData("firstName", e.target.value)
-                    }
-                    placeholder="First name"
-                    className={errors.firstName ? "border-destructive" : ""}
-                    disabled={isLoading}
-                  />
-                  {errors.firstName && (
-                    <p className="text-xs text-destructive">
-                      {errors.firstName}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={formData.lastName}
-                    onChange={(e) => updateFormData("lastName", e.target.value)}
-                    placeholder="Last name"
-                    className={errors.lastName ? "border-destructive" : ""}
-                    disabled={isLoading}
-                  />
-                  {errors.lastName && (
-                    <p className="text-xs text-destructive">
-                      {errors.lastName}
-                    </p>
-                  )}
-                </div>
-              </div>
+            <Tabs 
+              value={authMethod} 
+              onValueChange={(value) => {
+                setAuthMethod(value as "email" | "phone");
+                resetPhoneState();
+              }}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="email" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  Email
+                </TabsTrigger>
+                <TabsTrigger value="phone" className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  Phone
+                </TabsTrigger>
+              </TabsList>
 
-              {/* Email Field */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => updateFormData("email", e.target.value)}
-                    placeholder="Enter your email"
-                    className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
-                    disabled={isLoading}
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
-                )}
-              </div>
-
-              {/* Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={(e) => updateFormData("password", e.target.value)}
-                    placeholder="Create a strong password"
-                    className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
-                    disabled={isLoading}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-1 top-1 h-8 w-8 px-0"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-
-                {/* Password Requirements */}
-                {formData.password && (
-                  <div className="space-y-1 text-xs">
-                    <div
-                      className={`flex items-center space-x-2 ${passwordValidation.minLength ? "text-success" : "text-muted-foreground"}`}
-                    >
-                      <CheckCircle className="h-3 w-3" />
-                      <span>At least 8 characters</span>
+              <TabsContent value="email" className="space-y-4 mt-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Name Fields */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) =>
+                          updateFormData("firstName", e.target.value)
+                        }
+                        placeholder="First name"
+                        className={errors.firstName ? "border-destructive" : ""}
+                        disabled={isLoading}
+                      />
+                      {errors.firstName && (
+                        <p className="text-xs text-destructive">
+                          {errors.firstName}
+                        </p>
+                      )}
                     </div>
-                    <div
-                      className={`flex items-center space-x-2 ${passwordValidation.hasUpperCase && passwordValidation.hasLowerCase ? "text-success" : "text-muted-foreground"}`}
-                    >
-                      <CheckCircle className="h-3 w-3" />
-                      <span>Upper and lowercase letters</span>
-                    </div>
-                    <div
-                      className={`flex items-center space-x-2 ${passwordValidation.hasNumber ? "text-success" : "text-muted-foreground"}`}
-                    >
-                      <CheckCircle className="h-3 w-3" />
-                      <span>At least one number</span>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => updateFormData("lastName", e.target.value)}
+                        placeholder="Last name"
+                        className={errors.lastName ? "border-destructive" : ""}
+                        disabled={isLoading}
+                      />
+                      {errors.lastName && (
+                        <p className="text-xs text-destructive">
+                          {errors.lastName}
+                        </p>
+                      )}
                     </div>
                   </div>
-                )}
 
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
-                )}
-              </div>
-
-              {/* Confirm Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={formData.confirmPassword}
-                    onChange={(e) =>
-                      updateFormData("confirmPassword", e.target.value)
-                    }
-                    placeholder="Confirm your password"
-                    className={`pl-10 pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
-                    disabled={isLoading}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-1 top-1 h-8 w-8 px-0"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
+                  {/* Email Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => updateFormData("email", e.target.value)}
+                        placeholder="Enter your email"
+                        className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
+                        disabled={isLoading}
+                      />
+                    </div>
+                    {errors.email && (
+                      <p className="text-sm text-destructive">{errors.email}</p>
                     )}
-                  </Button>
-                </div>
-                {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              {/* Terms Agreement */}
-              <div className="space-y-3">
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="terms"
-                    checked={agreeToTerms}
-                    onCheckedChange={(checked) => {
-                      setAgreeToTerms(checked as boolean);
-                      if (errors.terms) {
-                        setErrors((prev) => ({ ...prev, terms: "" }));
-                      }
-                    }}
-                    className="mt-1"
-                  />
-                  <div className="text-sm leading-5">
-                    <label htmlFor="terms" className="cursor-pointer">
-                      I agree to the{" "}
-                      <Link
-                        to="/terms"
-                        className="text-primary hover:underline"
-                      >
-                        Terms of Service
-                      </Link>{" "}
-                      and{" "}
-                      <Link
-                        to="/privacy"
-                        className="text-primary hover:underline"
-                      >
-                        Privacy Policy
-                      </Link>
-                    </label>
                   </div>
-                </div>
-                {errors.terms && (
-                  <p className="text-sm text-destructive">{errors.terms}</p>
-                )}
-              </div>
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full h-11"
-                disabled={isLoading}
-              >
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </Button>
-            </form>
+                  {/* Password Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={formData.password}
+                        onChange={(e) => updateFormData("password", e.target.value)}
+                        placeholder="Create a strong password"
+                        className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
+                        disabled={isLoading}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-1 top-1 h-8 w-8 px-0"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+
+                    {/* Password Requirements */}
+                    {formData.password && (
+                      <div className="space-y-1 text-xs">
+                        <div
+                          className={`flex items-center space-x-2 ${passwordValidation.minLength ? "text-success" : "text-muted-foreground"}`}
+                        >
+                          <CheckCircle className="h-3 w-3" />
+                          <span>At least 8 characters</span>
+                        </div>
+                        <div
+                          className={`flex items-center space-x-2 ${passwordValidation.hasUpperCase && passwordValidation.hasLowerCase ? "text-success" : "text-muted-foreground"}`}
+                        >
+                          <CheckCircle className="h-3 w-3" />
+                          <span>Upper and lowercase letters</span>
+                        </div>
+                        <div
+                          className={`flex items-center space-x-2 ${passwordValidation.hasNumber ? "text-success" : "text-muted-foreground"}`}
+                        >
+                          <CheckCircle className="h-3 w-3" />
+                          <span>At least one number</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {errors.password && (
+                      <p className="text-sm text-destructive">{errors.password}</p>
+                    )}
+                  </div>
+
+                  {/* Confirm Password Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={formData.confirmPassword}
+                        onChange={(e) =>
+                          updateFormData("confirmPassword", e.target.value)
+                        }
+                        placeholder="Confirm your password"
+                        className={`pl-10 pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
+                        disabled={isLoading}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-1 top-1 h-8 w-8 px-0"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                    {errors.confirmPassword && (
+                      <p className="text-sm text-destructive">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Terms Agreement */}
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="terms"
+                        checked={agreeToTerms}
+                        onCheckedChange={(checked) => {
+                          setAgreeToTerms(checked as boolean);
+                          if (errors.terms) {
+                            setErrors((prev) => ({ ...prev, terms: "" }));
+                          }
+                        }}
+                        className="mt-1"
+                      />
+                      <div className="text-sm leading-5">
+                        <label htmlFor="terms" className="cursor-pointer">
+                          I agree to the{" "}
+                          <Link
+                            to="/terms"
+                            className="text-primary hover:underline"
+                          >
+                            Terms of Service
+                          </Link>{" "}
+                          and{" "}
+                          <Link
+                            to="/privacy"
+                            className="text-primary hover:underline"
+                          >
+                            Privacy Policy
+                          </Link>
+                        </label>
+                      </div>
+                    </div>
+                    {errors.terms && (
+                      <p className="text-sm text-destructive">{errors.terms}</p>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    className="w-full h-11"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Creating Account..." : "Create Account"}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="phone" className="space-y-4 mt-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Name Fields */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) =>
+                          updateFormData("firstName", e.target.value)
+                        }
+                        placeholder="First name"
+                        className={errors.firstName ? "border-destructive" : ""}
+                        disabled={isLoading}
+                      />
+                      {errors.firstName && (
+                        <p className="text-xs text-destructive">
+                          {errors.firstName}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => updateFormData("lastName", e.target.value)}
+                        placeholder="Last name"
+                        className={errors.lastName ? "border-destructive" : ""}
+                        disabled={isLoading}
+                      />
+                      {errors.lastName && (
+                        <p className="text-xs text-destructive">
+                          {errors.lastName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Phone Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => updateFormData("phone", e.target.value)}
+                        placeholder="+1 (555) 123-4567"
+                        className={`pl-10 ${errors.phone ? "border-destructive" : ""}`}
+                        disabled={isLoading || codeSent}
+                      />
+                    </div>
+                    {errors.phone && (
+                      <p className="text-sm text-destructive">{errors.phone}</p>
+                    )}
+                  </div>
+
+                  {!codeSent ? (
+                    <Button
+                      type="button"
+                      onClick={handleSendCode}
+                      className="w-full h-11"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Sending Code..." : "Send Verification Code"}
+                    </Button>
+                  ) : (
+                    <>
+                      {/* Verification Code Field */}
+                      <div className="space-y-2">
+                        <Label htmlFor="verificationCode">Verification Code</Label>
+                        <div className="relative">
+                          <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="verificationCode"
+                            type="text"
+                            value={formData.verificationCode}
+                            onChange={(e) => updateFormData("verificationCode", e.target.value)}
+                            placeholder="Enter 6-digit code"
+                            maxLength={6}
+                            className={`pl-10 ${errors.verificationCode ? "border-destructive" : ""}`}
+                            disabled={isLoading}
+                          />
+                        </div>
+                        {errors.verificationCode && (
+                          <p className="text-sm text-destructive">{errors.verificationCode}</p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          Code sent to {formData.phone}. 
+                          <button 
+                            type="button" 
+                            onClick={resetPhoneState}
+                            className="text-primary hover:underline ml-1"
+                          >
+                            Change number
+                          </button>
+                        </p>
+                      </div>
+
+                      {/* Password Field */}
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            value={formData.password}
+                            onChange={(e) => updateFormData("password", e.target.value)}
+                            placeholder="Create a strong password"
+                            className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
+                            disabled={isLoading}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-1 top-1 h-8 w-8 px-0"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                        {errors.password && (
+                          <p className="text-sm text-destructive">{errors.password}</p>
+                        )}
+                      </div>
+
+                      {/* Confirm Password Field */}
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={formData.confirmPassword}
+                            onChange={(e) =>
+                              updateFormData("confirmPassword", e.target.value)
+                            }
+                            placeholder="Confirm your password"
+                            className={`pl-10 pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
+                            disabled={isLoading}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-1 top-1 h-8 w-8 px-0"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                        {errors.confirmPassword && (
+                          <p className="text-sm text-destructive">
+                            {errors.confirmPassword}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Terms Agreement */}
+                      <div className="space-y-3">
+                        <div className="flex items-start space-x-3">
+                          <Checkbox
+                            id="terms"
+                            checked={agreeToTerms}
+                            onCheckedChange={(checked) => {
+                              setAgreeToTerms(checked as boolean);
+                              if (errors.terms) {
+                                setErrors((prev) => ({ ...prev, terms: "" }));
+                              }
+                            }}
+                            className="mt-1"
+                          />
+                          <div className="text-sm leading-5">
+                            <label htmlFor="terms" className="cursor-pointer">
+                              I agree to the{" "}
+                              <Link
+                                to="/terms"
+                                className="text-primary hover:underline"
+                              >
+                                Terms of Service
+                              </Link>{" "}
+                              and{" "}
+                              <Link
+                                to="/privacy"
+                                className="text-primary hover:underline"
+                              >
+                                Privacy Policy
+                              </Link>
+                            </label>
+                          </div>
+                        </div>
+                        {errors.terms && (
+                          <p className="text-sm text-destructive">{errors.terms}</p>
+                        )}
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full h-11"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? "Creating Account..." : "Create Account"}
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleSendCode}
+                        className="w-full h-11"
+                        disabled={isLoading}
+                      >
+                        Resend Code
+                      </Button>
+                    </>
+                  )}
+                </form>
+              </TabsContent>
+            </Tabs>
 
             {/* Divider */}
             <div className="relative">
