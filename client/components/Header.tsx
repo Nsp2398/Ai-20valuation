@@ -97,8 +97,12 @@ export default function Header() {
                 About
               </Link>
               <div className="flex flex-col space-y-2 pt-4 border-t">
-                <Button variant="ghost" className="justify-start">Sign In</Button>
-                <Button variant="outline" className="justify-start">Sign Up</Button>
+                <Link to="/signin">
+                  <Button variant="ghost" className="justify-start w-full">Sign In</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button variant="outline" className="justify-start w-full">Sign Up</Button>
+                </Link>
                 <Link to="/valuation">
                   <Button className="w-full">Get Started</Button>
                 </Link>
