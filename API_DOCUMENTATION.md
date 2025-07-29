@@ -5,6 +5,7 @@
 The ValuAI backend is a comprehensive REST API built with Express.js, TypeScript, and SQLite. It provides authentication, business valuation calculations, and report generation services.
 
 ## Base URL
+
 ```
 http://localhost:8080/api
 ```
@@ -22,9 +23,11 @@ Authorization: Bearer <your-jwt-token>
 ### 1. Health Check
 
 #### GET /ping
+
 Check if the API is running.
 
 **Response:**
+
 ```json
 {
   "message": "ValuAI API is running!"
@@ -36,9 +39,11 @@ Check if the API is running.
 ### 2. Authentication Endpoints
 
 #### POST /auth/signup/email
+
 Register a new user with email and password.
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -49,6 +54,7 @@ Register a new user with email and password.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -66,9 +72,11 @@ Register a new user with email and password.
 ```
 
 #### POST /auth/signin/email
+
 Sign in with email and password.
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -77,19 +85,24 @@ Sign in with email and password.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "message": "Signed in successfully",
-  "user": { /* user object */ },
+  "user": {
+    /* user object */
+  },
   "token": "jwt-token-here"
 }
 ```
 
 #### POST /auth/send-verification
+
 Send SMS verification code to phone number.
 
 **Request Body:**
+
 ```json
 {
   "phone": "+1234567890",
@@ -99,6 +112,7 @@ Send SMS verification code to phone number.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -108,9 +122,11 @@ Send SMS verification code to phone number.
 ```
 
 #### POST /auth/signup/phone
+
 Register with phone number and verification code.
 
 **Request Body:**
+
 ```json
 {
   "phone": "+1234567890",
@@ -122,9 +138,11 @@ Register with phone number and verification code.
 ```
 
 #### POST /auth/signin/phone
+
 Sign in with phone number and verification code.
 
 **Request Body:**
+
 ```json
 {
   "phone": "+1234567890",
@@ -133,9 +151,11 @@ Sign in with phone number and verification code.
 ```
 
 #### GET /auth/profile
+
 Get current user profile (requires authentication).
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -157,9 +177,11 @@ Get current user profile (requires authentication).
 ### 3. Valuation Endpoints
 
 #### POST /valuations
+
 Create a new business valuation (requires authentication).
 
 **Request Body:**
+
 ```json
 {
   "companyName": "TechStart Inc",
@@ -183,6 +205,7 @@ Create a new business valuation (requires authentication).
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -226,12 +249,15 @@ Create a new business valuation (requires authentication).
 ```
 
 #### GET /valuations/methods?stage=early-revenue
+
 Get recommended valuation methods for a business stage.
 
 **Query Parameters:**
+
 - `stage`: Business stage (idea, pre-revenue, early-revenue, growth)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -248,33 +274,43 @@ Get recommended valuation methods for a business stage.
 ```
 
 #### GET /valuations
+
 Get all valuations for the authenticated user.
 
 **Response:**
+
 ```json
 {
   "success": true,
   "message": "Valuations retrieved successfully",
-  "result": { /* latest valuation object */ }
+  "result": {
+    /* latest valuation object */
+  }
 }
 ```
 
 #### GET /valuations/:id
+
 Get a specific valuation by ID (requires authentication and ownership).
 
 **Response:**
+
 ```json
 {
   "success": true,
   "message": "Valuation retrieved successfully",
-  "result": { /* valuation object */ }
+  "result": {
+    /* valuation object */
+  }
 }
 ```
 
 #### DELETE /valuations/:id
+
 Delete a valuation (requires authentication and ownership).
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -287,15 +323,21 @@ Delete a valuation (requires authentication and ownership).
 ### 4. Dashboard Endpoint
 
 #### GET /dashboard
+
 Get dashboard data for the authenticated user.
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
-    "user": { /* user object */ },
-    "recentValuations": [ /* array of 5 most recent valuations */ ],
+    "user": {
+      /* user object */
+    },
+    "recentValuations": [
+      /* array of 5 most recent valuations */
+    ],
     "totalValuations": 15,
     "averageValuation": 2500000,
     "portfolioGrowth": 25.5
@@ -309,9 +351,11 @@ Get dashboard data for the authenticated user.
 ### 5. Report Endpoints
 
 #### POST /reports/generate
+
 Generate a valuation report (requires authentication).
 
 **Request Body:**
+
 ```json
 {
   "valuationId": "valuation-uuid",
@@ -320,6 +364,7 @@ Generate a valuation report (requires authentication).
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -330,14 +375,17 @@ Generate a valuation report (requires authentication).
 ```
 
 #### GET /reports/download/:reportId
+
 Download a generated report (requires authentication and ownership).
 
 **Response:** File download with appropriate headers.
 
 #### GET /reports
+
 Get all reports for the authenticated user.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -357,9 +405,11 @@ Get all reports for the authenticated user.
 ```
 
 #### DELETE /reports/:reportId
+
 Delete a report (requires authentication and ownership).
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -374,31 +424,37 @@ Delete a report (requires authentication and ownership).
 The API supports 6 internationally recognized valuation methodologies:
 
 ### 1. Berkus Method
+
 - **Applicable to:** Idea stage, Pre-revenue
 - **Description:** Pre-revenue valuation based on five key success factors
 - **Max Valuation:** $2.5M
 
 ### 2. Scorecard Method
+
 - **Applicable to:** Pre-revenue, Early revenue
 - **Description:** Comparative analysis with similar funded companies
 - **Factors:** Industry, team, market, revenue traction
 
 ### 3. Risk Factor Summation Method
+
 - **Applicable to:** All stages
 - **Description:** Adjusts pre-money valuation based on 12 risk factors
 - **Adjustment:** ±$250K per risk factor
 
 ### 4. VC Method
+
 - **Applicable to:** Early revenue, Growth
 - **Description:** Backward calculation from expected exit value
 - **Formula:** Terminal Value / Expected Return - Investment
 
 ### 5. DCF Analysis
+
 - **Applicable to:** Early revenue, Growth
 - **Description:** Discounted cash flow for revenue-generating businesses
 - **Requires:** Revenue history for projections
 
 ### 6. Comparable Analysis
+
 - **Applicable to:** All stages
 - **Description:** Market-based valuation using industry multiples
 - **Factors:** Industry multiples, market penetration
@@ -434,6 +490,7 @@ All endpoints return consistent error responses:
 ```
 
 ### HTTP Status Codes
+
 - **200:** Success
 - **201:** Created
 - **400:** Bad Request
@@ -447,6 +504,7 @@ All endpoints return consistent error responses:
 ## Database Schema
 
 ### Users Table
+
 - `id` (TEXT PRIMARY KEY)
 - `email` (TEXT UNIQUE)
 - `phone` (TEXT UNIQUE)
@@ -459,6 +517,7 @@ All endpoints return consistent error responses:
 - `updated_at` (DATETIME)
 
 ### Valuations Table
+
 - `id` (TEXT PRIMARY KEY)
 - `user_id` (TEXT FOREIGN KEY)
 - `company_name` (TEXT)
@@ -469,6 +528,7 @@ All endpoints return consistent error responses:
 - `created_at` (DATETIME)
 
 ### Verification Codes Table
+
 - `id` (TEXT PRIMARY KEY)
 - `user_id` (TEXT FOREIGN KEY)
 - `phone` (TEXT)
@@ -477,6 +537,7 @@ All endpoints return consistent error responses:
 - `used` (BOOLEAN)
 
 ### Reports Table
+
 - `id` (TEXT PRIMARY KEY)
 - `valuation_id` (TEXT FOREIGN KEY)
 - `user_id` (TEXT FOREIGN KEY)

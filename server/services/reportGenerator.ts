@@ -1,11 +1,11 @@
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import fs from 'fs';
-import { ValuationResult, ReportRequest, ReportResponse } from '@shared/api';
-import { getDatabase } from '../database/init';
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
+import fs from "fs";
+import { ValuationResult, ReportRequest, ReportResponse } from "@shared/api";
+import { getDatabase } from "../database/init";
 
 export class ReportGenerator {
-  private static reportsDir = path.join(process.cwd(), 'reports');
+  private static reportsDir = path.join(process.cwd(), "reports");
 
   static async ensureReportsDirectory(): Promise<void> {
     if (!fs.existsSync(this.reportsDir)) {
@@ -14,9 +14,9 @@ export class ReportGenerator {
   }
 
   static async generateReport(
-    valuationId: string, 
-    userId: string, 
-    format: 'pdf' | 'docx'
+    valuationId: string,
+    userId: string,
+    format: "pdf" | "docx",
   ): Promise<ReportResponse> {
     try {
       await this.ensureReportsDirectory();
@@ -24,63 +24,74 @@ export class ReportGenerator {
       const db = getDatabase();
 
       // Get valuation data
-      const valuation = await db.get(`
+      const valuation = await db.get(
+        `
         SELECT v.*, u.first_name, u.last_name, u.email 
         FROM valuations v 
         JOIN users u ON v.user_id = u.id 
         WHERE v.id = ? AND v.user_id = ?
-      `, [valuationId, userId]);
+      `,
+        [valuationId, userId],
+      );
 
       if (!valuation) {
         return {
           success: false,
-          message: 'Valuation not found'
+          message: "Valuation not found",
         };
       }
 
       const reportId = uuidv4();
-      const fileName = `valuation_report_${valuation.company_name.replace(/[^a-zA-Z0-9]/g, '_')}_${reportId}.${format}`;
+      const fileName = `valuation_report_${valuation.company_name.replace(/[^a-zA-Z0-9]/g, "_")}_${reportId}.${format}`;
       const filePath = path.join(this.reportsDir, fileName);
 
       // Generate report content based on format
-      if (format === 'pdf') {
+      if (format === "pdf") {
         await this.generatePDFReport(valuation, filePath);
       } else {
         await this.generateDocxReport(valuation, filePath);
       }
 
       // Store report record in database
-      await db.run(`
+      await db.run(
+        `
         INSERT INTO reports (id, valuation_id, user_id, format, file_path)
         VALUES (?, ?, ?, ?, ?)
-      `, [reportId, valuationId, userId, format, filePath]);
+      `,
+        [reportId, valuationId, userId, format, filePath],
+      );
 
       // Update valuation with report URL
       const downloadUrl = `/api/reports/download/${reportId}`;
-      await db.run(`
+      await db.run(
+        `
         UPDATE valuations SET report_url = ? WHERE id = ?
-      `, [downloadUrl, valuationId]);
+      `,
+        [downloadUrl, valuationId],
+      );
 
       return {
         success: true,
-        message: 'Report generated successfully',
+        message: "Report generated successfully",
         downloadUrl,
-        reportId
+        reportId,
       };
-
     } catch (error: any) {
-      console.error('Report generation error:', error);
+      console.error("Report generation error:", error);
       return {
         success: false,
-        message: 'Failed to generate report'
+        message: "Failed to generate report",
       };
     }
   }
 
-  private static async generatePDFReport(valuation: any, filePath: string): Promise<void> {
+  private static async generatePDFReport(
+    valuation: any,
+    filePath: string,
+  ): Promise<void> {
     // Simulate PDF generation - in production, use libraries like PDFKit, Puppeteer, or jsPDF
     const reportContent = this.generateReportContent(valuation);
-    
+
     // For demonstration, create a simple text file that simulates a PDF
     const pdfContent = `
 %PDF-1.4
@@ -116,7 +127,7 @@ stream
 BT
 /F1 12 Tf
 50 750 Td
-(${reportContent.replace(/\n/g, ') Tj T* (')}) Tj
+(${reportContent.replace(/\n/g, ") Tj T* (")}) Tj
 ET
 endstream
 endobj
@@ -137,14 +148,17 @@ startxref
 ${300 + reportContent.length}
 %%EOF
 `;
-    
+
     fs.writeFileSync(filePath, pdfContent);
   }
 
-  private static async generateDocxReport(valuation: any, filePath: string): Promise<void> {
+  private static async generateDocxReport(
+    valuation: any,
+    filePath: string,
+  ): Promise<void> {
     // Simulate DOCX generation - in production, use libraries like docx or officegen
     const reportContent = this.generateReportContent(valuation);
-    
+
     // For demonstration, create a simple text file
     fs.writeFileSync(filePath, reportContent);
   }
@@ -185,8 +199,8 @@ Key Metrics:
 - Team Size: ${valuation.team_size} members
 - Market Size: ${valuation.market_size}
 - Funding Goal: $${valuation.funding_goal.toLocaleString()}
-- Annual Revenue: ${valuation.revenue ? '$' + valuation.revenue.toLocaleString() : 'Pre-revenue'}
-- Annual Expenses: ${valuation.expenses ? '$' + valuation.expenses.toLocaleString() : 'Not disclosed'}
+- Annual Revenue: ${valuation.revenue ? "$" + valuation.revenue.toLocaleString() : "Pre-revenue"}
+- Annual Expenses: ${valuation.expenses ? "$" + valuation.expenses.toLocaleString() : "Not disclosed"}
 
 ==================================================
 
@@ -195,12 +209,16 @@ VALUATION METHODOLOGY
 
 This valuation has been calculated using multiple globally recognized methodologies:
 
-${methods.map((method: any) => `
+${methods
+  .map(
+    (method: any) => `
 ${method.name}:
 - Calculated Value: $${method.value.toLocaleString()}
 - Method Confidence: ${(method.confidence * 100).toFixed(1)}%
 - Weight in Analysis: ${(method.weight * 100).toFixed(1)}%
-`).join('\n')}
+`,
+  )
+  .join("\n")}
 
 PRIMARY VALUATION METHOD: ${valuation.primary_method}
 
@@ -219,15 +237,17 @@ Market Opportunity:
 The target addressable market of ${valuation.market_size} presents significant opportunity for growth and value creation.
 
 Competitive Position:
-${valuation.competition || 'The company operates in a competitive market environment.'}
+${valuation.competition || "The company operates in a competitive market environment."}
 
 Financial Performance:
-${valuation.revenue ? 
-  `Current annual revenue of $${valuation.revenue.toLocaleString()} demonstrates market traction.` : 
-  'As a pre-revenue company, valuation is based on potential and market opportunity.'}
+${
+  valuation.revenue
+    ? `Current annual revenue of $${valuation.revenue.toLocaleString()} demonstrates market traction.`
+    : "As a pre-revenue company, valuation is based on potential and market opportunity."
+}
 
 Team Assessment:
-With ${valuation.team_size} team members, the company ${valuation.team_size >= 5 ? 'has a substantial' : valuation.team_size >= 3 ? 'has an adequate' : 'may benefit from expanding its'} team to execute on its business plan.
+With ${valuation.team_size} team members, the company ${valuation.team_size >= 5 ? "has a substantial" : valuation.team_size >= 3 ? "has an adequate" : "may benefit from expanding its"} team to execute on its business plan.
 
 ==================================================
 
@@ -235,7 +255,7 @@ FUNDING ANALYSIS
 ==================================================
 
 Funding Requirement: $${valuation.funding_goal.toLocaleString()}
-Use of Funds: ${valuation.use_of_funds || 'To support business growth and operations'}
+Use of Funds: ${valuation.use_of_funds || "To support business growth and operations"}
 
 Based on the primary valuation of $${valuation.estimated_valuation_primary.toLocaleString()}, 
 the requested funding of $${valuation.funding_goal.toLocaleString()} would represent ${((valuation.funding_goal / valuation.estimated_valuation_primary) * 100).toFixed(1)}% 
@@ -279,35 +299,43 @@ Confidential & Proprietary
 `;
   }
 
-  static async getReportFile(reportId: string, userId: string): Promise<{ filePath: string; fileName: string } | null> {
+  static async getReportFile(
+    reportId: string,
+    userId: string,
+  ): Promise<{ filePath: string; fileName: string } | null> {
     try {
       const db = getDatabase();
-      
-      const report = await db.get(`
+
+      const report = await db.get(
+        `
         SELECT r.*, v.company_name 
         FROM reports r 
         JOIN valuations v ON r.valuation_id = v.id 
         WHERE r.id = ? AND r.user_id = ?
-      `, [reportId, userId]);
+      `,
+        [reportId, userId],
+      );
 
       if (!report || !fs.existsSync(report.file_path)) {
         return null;
       }
 
       // Increment download count
-      await db.run(`
+      await db.run(
+        `
         UPDATE reports SET download_count = download_count + 1 WHERE id = ?
-      `, [reportId]);
+      `,
+        [reportId],
+      );
 
-      const fileName = `${report.company_name.replace(/[^a-zA-Z0-9]/g, '_')}_valuation_report.${report.format}`;
+      const fileName = `${report.company_name.replace(/[^a-zA-Z0-9]/g, "_")}_valuation_report.${report.format}`;
 
       return {
         filePath: report.file_path,
-        fileName
+        fileName,
       };
-
     } catch (error) {
-      console.error('Get report file error:', error);
+      console.error("Get report file error:", error);
       return null;
     }
   }
@@ -315,27 +343,29 @@ Confidential & Proprietary
   static async getUserReports(userId: string): Promise<any[]> {
     try {
       const db = getDatabase();
-      
-      const reports = await db.all(`
+
+      const reports = await db.all(
+        `
         SELECT r.*, v.company_name, v.estimated_valuation_primary
         FROM reports r 
         JOIN valuations v ON r.valuation_id = v.id 
         WHERE r.user_id = ? 
         ORDER BY r.created_at DESC
-      `, [userId]);
+      `,
+        [userId],
+      );
 
-      return reports.map(report => ({
+      return reports.map((report) => ({
         id: report.id,
         valuationId: report.valuation_id,
         companyName: report.company_name,
         format: report.format,
         downloadCount: report.download_count,
         createdAt: report.created_at,
-        downloadUrl: `/api/reports/download/${report.id}`
+        downloadUrl: `/api/reports/download/${report.id}`,
       }));
-
     } catch (error) {
-      console.error('Get user reports error:', error);
+      console.error("Get user reports error:", error);
       return [];
     }
   }

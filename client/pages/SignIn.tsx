@@ -9,9 +9,22 @@ import {
 } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Eye, EyeOff, Mail, Lock, Phone, MessageSquare } from "lucide-react";
+import {
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  Phone,
+  MessageSquare,
+} from "lucide-react";
 
 export default function SignIn() {
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
@@ -43,21 +56,26 @@ export default function SignIn() {
 
   const handleSendCode = async () => {
     setIsLoading(true);
-    
-    const newErrors = { email: "", phone: "", password: "", verificationCode: "" };
-    
+
+    const newErrors = {
+      email: "",
+      phone: "",
+      password: "",
+      verificationCode: "",
+    };
+
     if (!formData.phone) {
       newErrors.phone = "Phone number is required";
     } else if (!validatePhone(formData.phone)) {
       newErrors.phone = "Please enter a valid phone number";
     }
-    
+
     if (newErrors.phone) {
       setErrors(newErrors);
       setIsLoading(false);
       return;
     }
-    
+
     // Simulate sending verification code
     setTimeout(() => {
       setIsLoading(false);
@@ -74,7 +92,12 @@ export default function SignIn() {
     setErrors({ email: "", phone: "", password: "", verificationCode: "" });
 
     // Validation
-    const newErrors = { email: "", phone: "", password: "", verificationCode: "" };
+    const newErrors = {
+      email: "",
+      phone: "",
+      password: "",
+      verificationCode: "",
+    };
 
     if (authMethod === "email") {
       if (!formData.email) {
@@ -102,7 +125,7 @@ export default function SignIn() {
       }
     }
 
-    if (Object.values(newErrors).some(error => error)) {
+    if (Object.values(newErrors).some((error) => error)) {
       setErrors(newErrors);
       setIsLoading(false);
       return;
@@ -111,7 +134,10 @@ export default function SignIn() {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      console.log("Sign in successful:", { method: authMethod, data: formData });
+      console.log("Sign in successful:", {
+        method: authMethod,
+        data: formData,
+      });
     }, 2000);
   };
 
@@ -125,8 +151,8 @@ export default function SignIn() {
 
   const resetPhoneState = () => {
     setCodeSent(false);
-    setFormData(prev => ({ ...prev, verificationCode: "" }));
-    setErrors(prev => ({ ...prev, phone: "", verificationCode: "" }));
+    setFormData((prev) => ({ ...prev, verificationCode: "" }));
+    setErrors((prev) => ({ ...prev, phone: "", verificationCode: "" }));
   };
 
   return (
@@ -145,13 +171,14 @@ export default function SignIn() {
           <CardHeader className="text-center space-y-4">
             <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
             <CardDescription className="text-base">
-              Sign in to your ValuAI account to access your valuations and reports
+              Sign in to your ValuAI account to access your valuations and
+              reports
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <Tabs 
-              value={authMethod} 
+            <Tabs
+              value={authMethod}
               onValueChange={(value) => {
                 setAuthMethod(value as "email" | "phone");
                 resetPhoneState();
@@ -180,7 +207,9 @@ export default function SignIn() {
                         id="email"
                         type="email"
                         value={formData.email}
-                        onChange={(e) => updateFormData("email", e.target.value)}
+                        onChange={(e) =>
+                          updateFormData("email", e.target.value)
+                        }
                         placeholder="Enter your email"
                         className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
                         disabled={isLoading}
@@ -200,7 +229,9 @@ export default function SignIn() {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
-                        onChange={(e) => updateFormData("password", e.target.value)}
+                        onChange={(e) =>
+                          updateFormData("password", e.target.value)
+                        }
                         placeholder="Enter your password"
                         className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
                         disabled={isLoading}
@@ -220,7 +251,9 @@ export default function SignIn() {
                       </Button>
                     </div>
                     {errors.password && (
-                      <p className="text-sm text-destructive">{errors.password}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.password}
+                      </p>
                     )}
                   </div>
 
@@ -256,7 +289,9 @@ export default function SignIn() {
                         id="phone"
                         type="tel"
                         value={formData.phone}
-                        onChange={(e) => updateFormData("phone", e.target.value)}
+                        onChange={(e) =>
+                          updateFormData("phone", e.target.value)
+                        }
                         placeholder="+1 (555) 123-4567"
                         className={`pl-10 ${errors.phone ? "border-destructive" : ""}`}
                         disabled={isLoading || codeSent}
@@ -280,14 +315,18 @@ export default function SignIn() {
                     <>
                       {/* Verification Code Field */}
                       <div className="space-y-2">
-                        <Label htmlFor="verificationCode">Verification Code</Label>
+                        <Label htmlFor="verificationCode">
+                          Verification Code
+                        </Label>
                         <div className="relative">
                           <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="verificationCode"
                             type="text"
                             value={formData.verificationCode}
-                            onChange={(e) => updateFormData("verificationCode", e.target.value)}
+                            onChange={(e) =>
+                              updateFormData("verificationCode", e.target.value)
+                            }
                             placeholder="Enter 6-digit code"
                             maxLength={6}
                             className={`pl-10 ${errors.verificationCode ? "border-destructive" : ""}`}
@@ -295,12 +334,14 @@ export default function SignIn() {
                           />
                         </div>
                         {errors.verificationCode && (
-                          <p className="text-sm text-destructive">{errors.verificationCode}</p>
+                          <p className="text-sm text-destructive">
+                            {errors.verificationCode}
+                          </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                          Code sent to {formData.phone}. 
-                          <button 
-                            type="button" 
+                          Code sent to {formData.phone}.
+                          <button
+                            type="button"
                             onClick={resetPhoneState}
                             className="text-primary hover:underline ml-1"
                           >

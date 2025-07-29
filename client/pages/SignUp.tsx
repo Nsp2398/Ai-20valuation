@@ -10,7 +10,12 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Checkbox } from "../components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -72,7 +77,7 @@ export default function SignUp() {
 
   const handleSendCode = async () => {
     setIsLoading(true);
-    
+
     const newErrors = {
       firstName: "",
       lastName: "",
@@ -83,27 +88,27 @@ export default function SignUp() {
       verificationCode: "",
       terms: "",
     };
-    
+
     if (!formData.firstName.trim()) {
       newErrors.firstName = "First name is required";
     }
-    
+
     if (!formData.lastName.trim()) {
       newErrors.lastName = "Last name is required";
     }
-    
+
     if (!formData.phone) {
       newErrors.phone = "Phone number is required";
     } else if (!validatePhone(formData.phone)) {
       newErrors.phone = "Please enter a valid phone number";
     }
-    
-    if (Object.values(newErrors).some(error => error)) {
+
+    if (Object.values(newErrors).some((error) => error)) {
       setErrors(newErrors);
       setIsLoading(false);
       return;
     }
-    
+
     // Simulate sending verification code
     setTimeout(() => {
       setIsLoading(false);
@@ -205,7 +210,10 @@ export default function SignUp() {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      console.log("Sign up successful:", { method: authMethod, data: formData });
+      console.log("Sign up successful:", {
+        method: authMethod,
+        data: formData,
+      });
     }, 2000);
   };
 
@@ -219,8 +227,8 @@ export default function SignUp() {
 
   const resetPhoneState = () => {
     setCodeSent(false);
-    setFormData(prev => ({ ...prev, verificationCode: "" }));
-    setErrors(prev => ({ ...prev, phone: "", verificationCode: "" }));
+    setFormData((prev) => ({ ...prev, verificationCode: "" }));
+    setErrors((prev) => ({ ...prev, phone: "", verificationCode: "" }));
   };
 
   const passwordValidation = validatePassword(formData.password);
@@ -249,8 +257,8 @@ export default function SignUp() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <Tabs 
-              value={authMethod} 
+            <Tabs
+              value={authMethod}
               onValueChange={(value) => {
                 setAuthMethod(value as "email" | "phone");
                 resetPhoneState();
@@ -295,7 +303,9 @@ export default function SignUp() {
                       <Input
                         id="lastName"
                         value={formData.lastName}
-                        onChange={(e) => updateFormData("lastName", e.target.value)}
+                        onChange={(e) =>
+                          updateFormData("lastName", e.target.value)
+                        }
                         placeholder="Last name"
                         className={errors.lastName ? "border-destructive" : ""}
                         disabled={isLoading}
@@ -317,7 +327,9 @@ export default function SignUp() {
                         id="email"
                         type="email"
                         value={formData.email}
-                        onChange={(e) => updateFormData("email", e.target.value)}
+                        onChange={(e) =>
+                          updateFormData("email", e.target.value)
+                        }
                         placeholder="Enter your email"
                         className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
                         disabled={isLoading}
@@ -337,7 +349,9 @@ export default function SignUp() {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
-                        onChange={(e) => updateFormData("password", e.target.value)}
+                        onChange={(e) =>
+                          updateFormData("password", e.target.value)
+                        }
                         placeholder="Create a strong password"
                         className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
                         disabled={isLoading}
@@ -382,7 +396,9 @@ export default function SignUp() {
                     )}
 
                     {errors.password && (
-                      <p className="text-sm text-destructive">{errors.password}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.password}
+                      </p>
                     )}
                   </div>
 
@@ -407,7 +423,9 @@ export default function SignUp() {
                         variant="ghost"
                         size="sm"
                         className="absolute right-1 top-1 h-8 w-8 px-0"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
                       >
                         {showConfirmPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -499,7 +517,9 @@ export default function SignUp() {
                       <Input
                         id="lastName"
                         value={formData.lastName}
-                        onChange={(e) => updateFormData("lastName", e.target.value)}
+                        onChange={(e) =>
+                          updateFormData("lastName", e.target.value)
+                        }
                         placeholder="Last name"
                         className={errors.lastName ? "border-destructive" : ""}
                         disabled={isLoading}
@@ -521,7 +541,9 @@ export default function SignUp() {
                         id="phone"
                         type="tel"
                         value={formData.phone}
-                        onChange={(e) => updateFormData("phone", e.target.value)}
+                        onChange={(e) =>
+                          updateFormData("phone", e.target.value)
+                        }
                         placeholder="+1 (555) 123-4567"
                         className={`pl-10 ${errors.phone ? "border-destructive" : ""}`}
                         disabled={isLoading || codeSent}
@@ -545,14 +567,18 @@ export default function SignUp() {
                     <>
                       {/* Verification Code Field */}
                       <div className="space-y-2">
-                        <Label htmlFor="verificationCode">Verification Code</Label>
+                        <Label htmlFor="verificationCode">
+                          Verification Code
+                        </Label>
                         <div className="relative">
                           <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="verificationCode"
                             type="text"
                             value={formData.verificationCode}
-                            onChange={(e) => updateFormData("verificationCode", e.target.value)}
+                            onChange={(e) =>
+                              updateFormData("verificationCode", e.target.value)
+                            }
                             placeholder="Enter 6-digit code"
                             maxLength={6}
                             className={`pl-10 ${errors.verificationCode ? "border-destructive" : ""}`}
@@ -560,12 +586,14 @@ export default function SignUp() {
                           />
                         </div>
                         {errors.verificationCode && (
-                          <p className="text-sm text-destructive">{errors.verificationCode}</p>
+                          <p className="text-sm text-destructive">
+                            {errors.verificationCode}
+                          </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                          Code sent to {formData.phone}. 
-                          <button 
-                            type="button" 
+                          Code sent to {formData.phone}.
+                          <button
+                            type="button"
                             onClick={resetPhoneState}
                             className="text-primary hover:underline ml-1"
                           >
@@ -583,7 +611,9 @@ export default function SignUp() {
                             id="password"
                             type={showPassword ? "text" : "password"}
                             value={formData.password}
-                            onChange={(e) => updateFormData("password", e.target.value)}
+                            onChange={(e) =>
+                              updateFormData("password", e.target.value)
+                            }
                             placeholder="Create a strong password"
                             className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
                             disabled={isLoading}
@@ -603,13 +633,17 @@ export default function SignUp() {
                           </Button>
                         </div>
                         {errors.password && (
-                          <p className="text-sm text-destructive">{errors.password}</p>
+                          <p className="text-sm text-destructive">
+                            {errors.password}
+                          </p>
                         )}
                       </div>
 
                       {/* Confirm Password Field */}
                       <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <Label htmlFor="confirmPassword">
+                          Confirm Password
+                        </Label>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input
@@ -628,7 +662,9 @@ export default function SignUp() {
                             variant="ghost"
                             size="sm"
                             className="absolute right-1 top-1 h-8 w-8 px-0"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
                           >
                             {showConfirmPassword ? (
                               <EyeOff className="h-4 w-4" />
@@ -678,7 +714,9 @@ export default function SignUp() {
                           </div>
                         </div>
                         {errors.terms && (
-                          <p className="text-sm text-destructive">{errors.terms}</p>
+                          <p className="text-sm text-destructive">
+                            {errors.terms}
+                          </p>
                         )}
                       </div>
 

@@ -1,8 +1,8 @@
-import sqlite3 from 'sqlite3';
-import { promisify } from 'util';
-import path from 'path';
+import sqlite3 from "sqlite3";
+import { promisify } from "util";
+import path from "path";
 
-const dbPath = path.join(process.cwd(), 'valuai.db');
+const dbPath = path.join(process.cwd(), "valuai.db");
 
 // Create promisified database interface
 export class Database {
@@ -14,7 +14,7 @@ export class Database {
 
   run(sql: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.db.run(sql, params, function(err) {
+      this.db.run(sql, params, function (err) {
         if (err) reject(err);
         else resolve({ id: this.lastID, changes: this.changes });
       });
@@ -145,10 +145,10 @@ export async function initializeDatabase() {
       )
     `);
 
-    console.log('Database initialized successfully');
+    console.log("Database initialized successfully");
     return db;
   } catch (error) {
-    console.error('Failed to initialize database:', error);
+    console.error("Failed to initialize database:", error);
     throw error;
   }
 }

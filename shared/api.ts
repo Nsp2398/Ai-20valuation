@@ -46,7 +46,7 @@ export interface VerificationResponse {
 export interface ValuationRequest {
   companyName: string;
   industry: string;
-  stage: 'idea' | 'pre-revenue' | 'early-revenue' | 'growth';
+  stage: "idea" | "pre-revenue" | "early-revenue" | "growth";
   description: string;
   revenue?: number;
   expenses?: number;
@@ -116,7 +116,7 @@ export interface DashboardResponse {
 // Report Types
 export interface ReportRequest {
   valuationId: string;
-  format: 'pdf' | 'docx';
+  format: "pdf" | "docx";
 }
 
 export interface ReportResponse {

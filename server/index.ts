@@ -6,27 +6,27 @@ import { authenticateToken, optionalAuth } from "./utils/auth";
 
 // Import route handlers
 import { handleDemo } from "./routes/demo";
-import { 
-  signUpEmail, 
-  signInEmail, 
-  sendVerificationCode, 
-  signUpPhone, 
-  signInPhone, 
-  getProfile 
+import {
+  signUpEmail,
+  signInEmail,
+  sendVerificationCode,
+  signUpPhone,
+  signInPhone,
+  getProfile,
 } from "./routes/auth";
-import { 
-  createValuation, 
-  getValuationMethods, 
-  getUserValuations, 
-  getValuationById, 
-  getDashboard, 
-  deleteValuation 
+import {
+  createValuation,
+  getValuationMethods,
+  getUserValuations,
+  getValuationById,
+  getDashboard,
+  deleteValuation,
 } from "./routes/valuation";
-import { 
-  generateReport, 
-  downloadReport, 
-  getUserReports, 
-  deleteReport 
+import {
+  generateReport,
+  downloadReport,
+  getUserReports,
+  deleteReport,
 } from "./routes/reports";
 
 export function createServer() {
@@ -34,8 +34,8 @@ export function createServer() {
 
   // Middleware
   app.use(cors());
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
   // Initialize database on server start
   initializeDatabase().catch(console.error);
@@ -73,19 +73,26 @@ export function createServer() {
   app.delete("/api/reports/:reportId", authenticateToken, deleteReport);
 
   // Error handling middleware
-  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error('Server error:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  });
+  app.use(
+    (
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      console.error("Server error:", err);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    },
+  );
 
   // 404 handler for API routes
-  app.use('/api/*', (req, res) => {
+  app.use("/api/*", (req, res) => {
     res.status(404).json({
       success: false,
-      message: 'API endpoint not found'
+      message: "API endpoint not found",
     });
   });
 
@@ -96,7 +103,7 @@ export function createServer() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const port = process.env.PORT || 3001;
   const server = createServer();
-  
+
   server.listen(port, () => {
     console.log(`🚀 Server running on port ${port}`);
     console.log(`📊 ValuAI API ready at http://localhost:${port}/api`);

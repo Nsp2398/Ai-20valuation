@@ -1,6 +1,11 @@
-import { RequestHandler } from 'express';
-import { AuthService, AuthenticatedRequest } from '../utils/auth';
-import { AuthRequest, AuthResponse, VerificationRequest, VerificationResponse } from '@shared/api';
+import { RequestHandler } from "express";
+import { AuthService, AuthenticatedRequest } from "../utils/auth";
+import {
+  AuthRequest,
+  AuthResponse,
+  VerificationRequest,
+  VerificationResponse,
+} from "@shared/api";
 
 export const signUpEmail: RequestHandler = async (req, res) => {
   try {
@@ -9,7 +14,7 @@ export const signUpEmail: RequestHandler = async (req, res) => {
     if (!email || !password || !firstName || !lastName) {
       return res.status(400).json({
         success: false,
-        message: 'Email, password, first name, and last name are required'
+        message: "Email, password, first name, and last name are required",
       } as AuthResponse);
     }
 
@@ -18,7 +23,7 @@ export const signUpEmail: RequestHandler = async (req, res) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid email format'
+        message: "Invalid email format",
       } as AuthResponse);
     }
 
@@ -26,7 +31,7 @@ export const signUpEmail: RequestHandler = async (req, res) => {
     if (password.length < 8) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 8 characters long'
+        message: "Password must be at least 8 characters long",
       } as AuthResponse);
     }
 
@@ -34,28 +39,27 @@ export const signUpEmail: RequestHandler = async (req, res) => {
       email,
       password,
       firstName,
-      lastName
+      lastName,
     });
 
     const token = AuthService.generateToken({
       id: user.id,
       email: user.email,
       firstName: user.firstName,
-      lastName: user.lastName
+      lastName: user.lastName,
     });
 
     res.status(201).json({
       success: true,
-      message: 'Account created successfully',
+      message: "Account created successfully",
       user,
-      token
+      token,
     } as AuthResponse);
-
   } catch (error: any) {
-    console.error('Sign up error:', error);
+    console.error("Sign up error:", error);
     res.status(400).json({
       success: false,
-      message: error.message || 'Failed to create account'
+      message: error.message || "Failed to create account",
     } as AuthResponse);
   }
 };
@@ -67,7 +71,7 @@ export const signInEmail: RequestHandler = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Email and password are required'
+        message: "Email and password are required",
       } as AuthResponse);
     }
 
@@ -75,15 +79,18 @@ export const signInEmail: RequestHandler = async (req, res) => {
     if (!dbUser) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: "Invalid email or password",
       } as AuthResponse);
     }
 
-    const isPasswordValid = await AuthService.comparePassword(password, dbUser.password_hash);
+    const isPasswordValid = await AuthService.comparePassword(
+      password,
+      dbUser.password_hash,
+    );
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: "Invalid email or password",
       } as AuthResponse);
     }
 
@@ -94,7 +101,7 @@ export const signInEmail: RequestHandler = async (req, res) => {
       firstName: dbUser.first_name,
       lastName: dbUser.last_name,
       createdAt: dbUser.created_at,
-      updatedAt: dbUser.updated_at
+      updatedAt: dbUser.updated_at,
     };
 
     const token = AuthService.generateToken({
@@ -102,21 +109,20 @@ export const signInEmail: RequestHandler = async (req, res) => {
       email: user.email,
       phone: user.phone,
       firstName: user.firstName,
-      lastName: user.lastName
+      lastName: user.lastName,
     });
 
     res.json({
       success: true,
-      message: 'Signed in successfully',
+      message: "Signed in successfully",
       user,
-      token
+      token,
     } as AuthResponse);
-
   } catch (error: any) {
-    console.error('Sign in error:', error);
+    console.error("Sign in error:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: "Internal server error",
     } as AuthResponse);
   }
 };
@@ -128,7 +134,7 @@ export const sendVerificationCode: RequestHandler = async (req, res) => {
     if (!phone) {
       return res.status(400).json({
         success: false,
-        message: 'Phone number is required'
+        message: "Phone number is required",
       } as VerificationResponse);
     }
 
@@ -137,7 +143,7 @@ export const sendVerificationCode: RequestHandler = async (req, res) => {
     if (!phoneRegex.test(phone)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid phone number format'
+        message: "Invalid phone number format",
       } as VerificationResponse);
     }
 
@@ -150,33 +156,38 @@ export const sendVerificationCode: RequestHandler = async (req, res) => {
     if (!smsSent) {
       return res.status(500).json({
         success: false,
-        message: 'Failed to send verification code. Please try again.'
+        message: "Failed to send verification code. Please try again.",
       } as VerificationResponse);
     }
 
     res.json({
       success: true,
-      message: 'Verification code sent successfully',
-      codeSent: true
+      message: "Verification code sent successfully",
+      codeSent: true,
     } as VerificationResponse);
-
   } catch (error: any) {
-    console.error('Send verification code error:', error);
+    console.error("Send verification code error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to send verification code'
+      message: "Failed to send verification code",
     } as VerificationResponse);
   }
 };
 
 export const signUpPhone: RequestHandler = async (req, res) => {
   try {
-    const { phone, verificationCode, password, firstName, lastName }: AuthRequest = req.body;
+    const {
+      phone,
+      verificationCode,
+      password,
+      firstName,
+      lastName,
+    }: AuthRequest = req.body;
 
     if (!phone || !verificationCode || !password || !firstName || !lastName) {
       return res.status(400).json({
         success: false,
-        message: 'All fields are required'
+        message: "All fields are required",
       } as AuthResponse);
     }
 
@@ -185,7 +196,7 @@ export const signUpPhone: RequestHandler = async (req, res) => {
     if (!isCodeValid) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid or expired verification code'
+        message: "Invalid or expired verification code",
       } as AuthResponse);
     }
 
@@ -193,7 +204,7 @@ export const signUpPhone: RequestHandler = async (req, res) => {
     if (password.length < 8) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 8 characters long'
+        message: "Password must be at least 8 characters long",
       } as AuthResponse);
     }
 
@@ -201,7 +212,7 @@ export const signUpPhone: RequestHandler = async (req, res) => {
       phone,
       password,
       firstName,
-      lastName
+      lastName,
     });
 
     // Mark phone as verified
@@ -211,21 +222,20 @@ export const signUpPhone: RequestHandler = async (req, res) => {
       id: user.id,
       phone: user.phone,
       firstName: user.firstName,
-      lastName: user.lastName
+      lastName: user.lastName,
     });
 
     res.status(201).json({
       success: true,
-      message: 'Account created successfully',
+      message: "Account created successfully",
       user,
-      token
+      token,
     } as AuthResponse);
-
   } catch (error: any) {
-    console.error('Phone sign up error:', error);
+    console.error("Phone sign up error:", error);
     res.status(400).json({
       success: false,
-      message: error.message || 'Failed to create account'
+      message: error.message || "Failed to create account",
     } as AuthResponse);
   }
 };
@@ -237,7 +247,7 @@ export const signInPhone: RequestHandler = async (req, res) => {
     if (!phone || !verificationCode) {
       return res.status(400).json({
         success: false,
-        message: 'Phone number and verification code are required'
+        message: "Phone number and verification code are required",
       } as AuthResponse);
     }
 
@@ -246,7 +256,7 @@ export const signInPhone: RequestHandler = async (req, res) => {
     if (!isCodeValid) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid or expired verification code'
+        message: "Invalid or expired verification code",
       } as AuthResponse);
     }
 
@@ -254,7 +264,7 @@ export const signInPhone: RequestHandler = async (req, res) => {
     if (!dbUser) {
       return res.status(401).json({
         success: false,
-        message: 'No account found with this phone number'
+        message: "No account found with this phone number",
       } as AuthResponse);
     }
 
@@ -265,7 +275,7 @@ export const signInPhone: RequestHandler = async (req, res) => {
       firstName: dbUser.first_name,
       lastName: dbUser.last_name,
       createdAt: dbUser.created_at,
-      updatedAt: dbUser.updated_at
+      updatedAt: dbUser.updated_at,
     };
 
     const token = AuthService.generateToken({
@@ -273,31 +283,33 @@ export const signInPhone: RequestHandler = async (req, res) => {
       email: user.email,
       phone: user.phone,
       firstName: user.firstName,
-      lastName: user.lastName
+      lastName: user.lastName,
     });
 
     res.json({
       success: true,
-      message: 'Signed in successfully',
+      message: "Signed in successfully",
       user,
-      token
+      token,
     } as AuthResponse);
-
   } catch (error: any) {
-    console.error('Phone sign in error:', error);
+    console.error("Phone sign in error:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: "Internal server error",
     } as AuthResponse);
   }
 };
 
-export const getProfile: RequestHandler = async (req: AuthenticatedRequest, res) => {
+export const getProfile: RequestHandler = async (
+  req: AuthenticatedRequest,
+  res,
+) => {
   try {
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        message: 'Authentication required'
+        message: "Authentication required",
       } as AuthResponse);
     }
 
@@ -305,7 +317,7 @@ export const getProfile: RequestHandler = async (req: AuthenticatedRequest, res)
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       } as AuthResponse);
     }
 
@@ -316,20 +328,19 @@ export const getProfile: RequestHandler = async (req: AuthenticatedRequest, res)
       firstName: user.first_name,
       lastName: user.last_name,
       createdAt: user.created_at,
-      updatedAt: user.updated_at
+      updatedAt: user.updated_at,
     };
 
     res.json({
       success: true,
-      message: 'Profile retrieved successfully',
-      user: userProfile
+      message: "Profile retrieved successfully",
+      user: userProfile,
     } as AuthResponse);
-
   } catch (error: any) {
-    console.error('Get profile error:', error);
+    console.error("Get profile error:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: "Internal server error",
     } as AuthResponse);
   }
 };
